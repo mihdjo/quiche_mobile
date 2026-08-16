@@ -8,6 +8,10 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/*
+    @author: mihdjo
+*/
+
 @RestController
 @RequestMapping("/api/ingredients")
 public class SastojakController {

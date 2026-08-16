@@ -1,0 +1,79 @@
+# ==========================
+# Java / Spring Boot
+# ==========================
+
+backend/target/
+backend/*.log
+*.class
+*.jar
+*.war
+
+# Maven
+backend/.mvn/timing.properties
+
+# Spring local configuration / secrets
+backend/src/main/resources/application-local.properties
+
+# ==========================
+# Android / Gradle
+# ==========================
+
+android/.gradle/
+android/build/
+android/app/build/
+android/local.properties
+
+android/captures/
+android/.externalNativeBuild/
+android/.cxx/
+
+# ==========================
+# IntelliJ / Android Studio
+# ==========================
+
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# ==========================
+# NetBeans
+# ==========================
+
+backend/nbproject/private/
+backend/nbbuild/
+backend/dist/
+backend/nbdist/
+backend/.nb-gradle/
+
+# ==========================
+# STS / Eclipse
+# ==========================
+
+backend/.apt_generated/
+backend/.classpath
+backend/.factorypath
+backend/.project
+backend/.settings/
+backend/.springBeans
+backend/.sts4-cache/
+
+# ==========================
+# VS Code
+# ==========================
+
+.vscode/
+
+# ==========================
+# Environment / secrets
+# ==========================
+
+.env
+.env.*
+
+# ==========================
+# OS
+# ==========================
+
+.DS_Store
+Thumbs.db

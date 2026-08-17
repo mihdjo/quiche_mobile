@@ -9,6 +9,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import jakarta.servlet.DispatcherType;
 
 /*
     @author: mihdjo
@@ -37,20 +38,21 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
 
-                .sessionManagement(session ->
-                        session.sessionCreationPolicy(
-                                SessionCreationPolicy.STATELESS
-                        )
+                .sessionManagement(session
+                        -> session.sessionCreationPolicy(
+                        SessionCreationPolicy.STATELESS
                 )
-
+                )
+                
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**").permitAll()
-                        .anyRequest().authenticated()
+                .dispatcherTypeMatchers(DispatcherType.ERROR).permitAll()
+                .requestMatchers("/api/auth/**").permitAll()
+                .anyRequest().authenticated()
                 )
-
-                .exceptionHandling(exceptions ->
-                        exceptions.authenticationEntryPoint(
-                                (request, response, authException) -> {
+                
+                .exceptionHandling(exceptions
+                        -> exceptions.authenticationEntryPoint(
+                        (request, response, authException) -> {
                                     response.setStatus(
                                             HttpStatus.UNAUTHORIZED.value()
                                     );

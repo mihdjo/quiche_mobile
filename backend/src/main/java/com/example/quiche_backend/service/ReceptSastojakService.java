@@ -1,12 +1,13 @@
 package com.example.quiche_backend.service;
 
+import com.example.quiche_backend.dto.ReceptSastojakCreateRequest;
 import com.example.quiche_backend.dto.ReceptSastojakResponse;
 import com.example.quiche_backend.model.ReceptSastojak;
 import com.example.quiche_backend.model.Sastojak;
 import com.example.quiche_backend.repository.ReceptSastojakRepository;
 import com.example.quiche_backend.repository.SastojakRepository;
 import org.springframework.stereotype.Service;
-import com.example.quiche_backend.dto.ReceptSastojakRequest;
+import com.example.quiche_backend.dto.ReceptSastojakUpdateRequest;
 import com.example.quiche_backend.model.ReceptSastojakId;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
@@ -59,7 +60,7 @@ public class ReceptSastojakService {
 
     public ReceptSastojakResponse dodajSastojakURecept(
             Integer idRecept,
-            ReceptSastojakRequest request) {
+            ReceptSastojakCreateRequest request) {
 
         // Provera da recept postoji
         receptService.getReceptById(idRecept);
@@ -105,7 +106,7 @@ public class ReceptSastojakService {
     public ReceptSastojakResponse izmeniSastojakUReceptu(
             Integer idRecept,
             Integer idSastojak,
-            ReceptSastojakRequest request) {
+            ReceptSastojakUpdateRequest request) {
 
         receptService.getReceptById(idRecept);
 

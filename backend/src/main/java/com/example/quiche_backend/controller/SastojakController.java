@@ -1,7 +1,9 @@
 package com.example.quiche_backend.controller;
 
+import com.example.quiche_backend.dto.SastojakRequest;
 import com.example.quiche_backend.model.Sastojak;
 import com.example.quiche_backend.service.SastojakService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -34,22 +36,18 @@ public class SastojakController {
 
     @PostMapping
     public ResponseEntity<Sastojak> createSastojak(
-            @RequestBody Sastojak sastojak) {
-
-        Sastojak noviSastojak =
-                sastojakService.createSastojak(sastojak);
-
+            @Valid @RequestBody SastojakRequest request) {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(noviSastojak);
+                .body(sastojakService.createSastojak(request));
     }
 
     @PutMapping("/{id}")
     public Sastojak updateSastojak(
             @PathVariable Integer id,
-            @RequestBody Sastojak sastojak) {
+            @Valid @RequestBody SastojakRequest request) {
 
-        return sastojakService.updateSastojak(id, sastojak);
+        return sastojakService.updateSastojak(id, request);
     }
 
     @DeleteMapping("/{id}")

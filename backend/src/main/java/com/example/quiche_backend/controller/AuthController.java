@@ -5,6 +5,8 @@ import com.example.quiche_backend.service.AuthService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
+
 
 /*
     @author: mihdjo
@@ -22,7 +24,7 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<KorisnikResponse> register(
-            @RequestBody RegisterRequest request) {
+            @Valid @RequestBody RegisterRequest request) {
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -31,7 +33,7 @@ public class AuthController {
 
     @PostMapping("/login")
     public AuthResponse login(
-            @RequestBody LoginRequest request) {
+            @Valid @RequestBody LoginRequest request) {
 
         return authService.login(request);
     }

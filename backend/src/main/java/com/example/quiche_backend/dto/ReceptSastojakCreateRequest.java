@@ -1,18 +1,31 @@
 package com.example.quiche_backend.dto;
 
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
 import java.math.BigDecimal;
 
 /*
     @author: mihdjo
-*/
+ */
 
-public class ReceptSastojakRequest {
+public class ReceptSastojakCreateRequest {
 
+    @NotNull(message = "Sastojak je obavezan.")
     private Integer idSastojak;
+
+    @NotNull(message = "Količina je obavezna.")
+    @DecimalMin(
+            value = "0.01",
+            message = "Količina mora biti veća od 0."
+    )
     private BigDecimal kolicina;
+
+    @NotBlank(message = "Jedinica mere je obavezna.")
     private String jedinicaMere;
 
-    public ReceptSastojakRequest() {
+    public ReceptSastojakCreateRequest() {
     }
 
     public Integer getIdSastojak() {

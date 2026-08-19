@@ -1,12 +1,17 @@
 package com.example.quiche_backend.dto;
 
+import jakarta.validation.constraints.NotBlank;
+
 /*
     @author: mihdjo
 */
 
 public class LoginRequest {
 
+    @NotBlank(message = "Username je obavezan.")
     private String username;
+
+    @NotBlank(message = "Password je obavezan.")
     private String password;
 
     public LoginRequest() {

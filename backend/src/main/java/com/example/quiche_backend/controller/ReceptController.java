@@ -1,5 +1,6 @@
 package com.example.quiche_backend.controller;
 
+import com.example.quiche_backend.dto.ReceptRequest;
 import com.example.quiche_backend.dto.ReceptSastojakResponse;
 import com.example.quiche_backend.model.Recept;
 import com.example.quiche_backend.service.ReceptSastojakService;
@@ -7,9 +8,14 @@ import com.example.quiche_backend.service.ReceptService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import com.example.quiche_backend.dto.ReceptSastojakRequest;
+import com.example.quiche_backend.dto.ReceptResponse;
+import com.example.quiche_backend.dto.ReceptSastojakCreateRequest;
+import com.example.quiche_backend.dto.ReceptSastojakUpdateRequest;
+import com.example.quiche_backend.model.Korisnik;
+import jakarta.validation.Valid;
 
 import java.util.List;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 /*
     @author: mihdjo
@@ -30,13 +36,18 @@ public class ReceptController {
     }
 
     @GetMapping
-    public List<Recept> getAllRecepti() {
-        return receptService.getAllRecepti();
+    public List<Recept> getRecepti(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) Integer cuisine) {
+
+        return receptService.getRecepti(name, cuisine);
     }
 
     @GetMapping("/{id}")
-    public Recept getReceptById(@PathVariable Integer id) {
-        return receptService.getReceptById(id);
+    public ReceptResponse getReceptById(
+            @PathVariable Integer id) {
+
+        return receptService.getReceptDetailsById(id);
     }
 
     @GetMapping("/{id}/ingredients")
@@ -48,9 +59,11 @@ public class ReceptController {
 
     @PostMapping
     public ResponseEntity<Recept> createRecept(
-            @RequestBody Recept recept) {
+            @AuthenticationPrincipal Korisnik korisnik,
+            @Valid @RequestBody ReceptRequest request) {
 
-        Recept noviRecept = receptService.createRecept(recept);
+        Recept noviRecept
+                = receptService.createRecept(request, korisnik);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -60,11 +73,11 @@ public class ReceptController {
     @PutMapping("/{id}")
     public Recept updateRecept(
             @PathVariable Integer id,
-            @RequestBody Recept recept) {
+            @Valid @RequestBody ReceptRequest request) {
 
-        return receptService.updateRecept(id, recept);
+        return receptService.updateRecept(id, request);
     }
-
+    
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteRecept(
             @PathVariable Integer id) {
@@ -77,10 +90,11 @@ public class ReceptController {
     @PostMapping("/{id}/ingredients")
     public ResponseEntity<ReceptSastojakResponse> dodajSastojakURecept(
             @PathVariable Integer id,
-            @RequestBody ReceptSastojakRequest request) {
+            @Valid @RequestBody ReceptSastojakCreateRequest request) {
 
         ReceptSastojakResponse response
-                = receptSastojakService.dodajSastojakURecept(id, request);
+                = receptSastojakService
+                        .dodajSastojakURecept(id, request);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -91,10 +105,14 @@ public class ReceptController {
     public ReceptSastojakResponse izmeniSastojakUReceptu(
             @PathVariable Integer id,
             @PathVariable Integer ingredientId,
-            @RequestBody ReceptSastojakRequest request) {
+            @Valid @RequestBody ReceptSastojakUpdateRequest request) {
 
         return receptSastojakService
-                .izmeniSastojakUReceptu(id, ingredientId, request);
+                .izmeniSastojakUReceptu(
+                        id,
+                        ingredientId,
+                        request
+                );
     }
 
     @DeleteMapping("/{id}/ingredients/{ingredientId}")

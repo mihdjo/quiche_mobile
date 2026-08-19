@@ -1,5 +1,10 @@
 package com.example.quiche_backend.dto;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Past;
+import jakarta.validation.constraints.Size;
+
 import java.time.LocalDate;
 
 /*
@@ -8,10 +13,26 @@ import java.time.LocalDate;
 
 public class RegisterRequest {
 
+    @NotBlank(message = "Ime je obavezno.")
+    @Size(max = 100, message = "Ime može imati najviše 100 karaktera.")
     private String ime;
+
+    @NotBlank(message = "Prezime je obavezno.")
+    @Size(max = 100, message = "Prezime može imati najviše 100 karaktera.")
     private String prezime;
+
+    @NotBlank(message = "Username je obavezan.")
+    @Size(min = 3, max = 100,
+            message = "Username mora imati između 3 i 100 karaktera.")
     private String username;
+
+    @NotBlank(message = "Password je obavezan.")
+    @Size(min = 6,
+            message = "Password mora imati najmanje 6 karaktera.")
     private String password;
+
+    @NotNull(message = "Datum rođenja je obavezan.")
+    @Past(message = "Datum rođenja mora biti u prošlosti.")
     private LocalDate datumRodjenja;
 
     public RegisterRequest() {

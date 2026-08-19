@@ -5,7 +5,7 @@ import com.example.quiche_backend.repository.SastojakRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-
+import com.example.quiche_backend.dto.SastojakRequest;
 import java.util.List;
 
 /*
@@ -27,28 +27,29 @@ public class SastojakService {
 
     public Sastojak getSastojakById(Integer id) {
         return sastojakRepository.findById(id)
-                .orElseThrow(() ->
-                        new ResponseStatusException(
-                                HttpStatus.NOT_FOUND,
-                                "Sastojak nije pronađen."
-                        )
+                .orElseThrow(()
+                        -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Sastojak nije pronađen."
+                )
                 );
     }
 
-    public Sastojak createSastojak(Sastojak sastojak) {
+    public Sastojak createSastojak(SastojakRequest request) {
 
-        sastojak.setIdSastojak(null);
+        Sastojak sastojak = new Sastojak();
+        sastojak.setNaziv(request.getNaziv());
 
         return sastojakRepository.save(sastojak);
     }
 
     public Sastojak updateSastojak(
             Integer id,
-            Sastojak noviPodaci) {
+            SastojakRequest request) {
 
         Sastojak sastojak = getSastojakById(id);
 
-        sastojak.setNaziv(noviPodaci.getNaziv());
+        sastojak.setNaziv(request.getNaziv());
 
         return sastojakRepository.save(sastojak);
     }

@@ -4,7 +4,6 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.ViewModelProvider
@@ -13,11 +12,12 @@ import com.example.quiche.data.remote.RecipeApi
 import com.example.quiche.data.remote.RetrofitClient
 import com.example.quiche.data.repository.AuthRepository
 import com.example.quiche.data.repository.RecipeRepository
-import com.example.quiche.ui.screens.HomeScreen
-import com.example.quiche.ui.screens.LoginScreen
+import com.example.quiche.navigation.QuicheApp
 import com.example.quiche.ui.theme.QuicheTheme
 import com.example.quiche.ui.viewmodel.LoginViewModel
 import com.example.quiche.ui.viewmodel.LoginViewModelFactory
+import com.example.quiche.ui.viewmodel.RecipeDetailsViewModel
+import com.example.quiche.ui.viewmodel.RecipeDetailsViewModelFactory
 import com.example.quiche.ui.viewmodel.RecipeViewModel
 import com.example.quiche.ui.viewmodel.RecipeViewModelFactory
 
@@ -25,6 +25,7 @@ class MainActivity : ComponentActivity() {
 
     private lateinit var loginViewModel: LoginViewModel
     private lateinit var recipeViewModel: RecipeViewModel
+    private lateinit var recipeDetailsViewModel: RecipeDetailsViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,39 +33,50 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
 
         /*
-         * Token storage
+         * ============================================================
+         * LOCAL STORAGE
+         * ============================================================
          */
+
         val tokenManager =
             TokenManager(applicationContext)
 
+        val initiallyLoggedIn =
+            tokenManager.hasToken()
+
         /*
-         * Authentication
+         * ============================================================
+         * AUTHENTICATION
+         * ============================================================
          */
+
         val authRepository =
             AuthRepository(
-                RetrofitClient.authApi,
-                tokenManager
+                authApi = RetrofitClient.authApi,
+                tokenManager = tokenManager
             )
 
-        val loginFactory =
+        val loginViewModelFactory =
             LoginViewModelFactory(
-                authRepository
+                authRepository = authRepository
             )
 
         loginViewModel =
             ViewModelProvider(
                 this,
-                loginFactory
+                loginViewModelFactory
             )[LoginViewModel::class.java]
 
         /*
-         * Protected API client
+         * ============================================================
+         * AUTHENTICATED RETROFIT CLIENT
+         * ============================================================
          */
+
         val authenticatedRetrofit =
-            RetrofitClient
-                .createAuthenticatedRetrofit(
-                    tokenManager
-                )
+            RetrofitClient.createAuthenticatedRetrofit(
+                tokenManager = tokenManager
+            )
 
         val recipeApi =
             authenticatedRetrofit.create(
@@ -72,22 +84,50 @@ class MainActivity : ComponentActivity() {
             )
 
         val recipeRepository =
-            RecipeRepository(recipeApi)
+            RecipeRepository(
+                recipeApi = recipeApi
+            )
 
-        val recipeFactory =
+        /*
+         * ============================================================
+         * RECIPE FEED
+         * ============================================================
+         */
+
+        val recipeViewModelFactory =
             RecipeViewModelFactory(
-                recipeRepository
+                recipeRepository = recipeRepository
             )
 
         recipeViewModel =
             ViewModelProvider(
                 this,
-                recipeFactory
+                recipeViewModelFactory
             )[RecipeViewModel::class.java]
 
         /*
-         * UI
+         * ============================================================
+         * RECIPE DETAILS
+         * ============================================================
          */
+
+        val recipeDetailsViewModelFactory =
+            RecipeDetailsViewModelFactory(
+                recipeRepository = recipeRepository
+            )
+
+        recipeDetailsViewModel =
+            ViewModelProvider(
+                this,
+                recipeDetailsViewModelFactory
+            )[RecipeDetailsViewModel::class.java]
+
+        /*
+         * ============================================================
+         * UI
+         * ============================================================
+         */
+
         setContent {
 
             QuicheTheme {
@@ -102,28 +142,33 @@ class MainActivity : ComponentActivity() {
                     .uiState
                     .collectAsState()
 
-                if (loginUiState.isLoggedIn) {
+                val recipeDetailsUiState by
+                recipeDetailsViewModel
+                    .uiState
+                    .collectAsState()
 
-                    LaunchedEffect(Unit) {
-                        recipeViewModel.loadRecipes()
-                    }
+                QuicheApp(
+                    initiallyLoggedIn = initiallyLoggedIn,
 
-                    HomeScreen(
-                        uiState = recipeUiState
-                    )
+                    loginUiState = loginUiState,
+                    recipeUiState = recipeUiState,
+                    recipeDetailsUiState = recipeDetailsUiState,
 
-                } else {
+                    onUsernameChange =
+                        loginViewModel::onUsernameChange,
 
-                    LoginScreen(
-                        uiState = loginUiState,
-                        onUsernameChange =
-                            loginViewModel::onUsernameChange,
-                        onPasswordChange =
-                            loginViewModel::onPasswordChange,
-                        onLoginClick =
-                            loginViewModel::login
-                    )
-                }
+                    onPasswordChange =
+                        loginViewModel::onPasswordChange,
+
+                    onLoginClick =
+                        loginViewModel::login,
+
+                    onLoadRecipes =
+                        recipeViewModel::loadRecipes,
+
+                    onLoadRecipeDetails =
+                        recipeDetailsViewModel::loadRecipe
+                )
             }
         }
     }

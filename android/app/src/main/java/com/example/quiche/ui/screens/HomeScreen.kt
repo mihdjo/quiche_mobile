@@ -21,7 +21,8 @@ import com.example.quiche.ui.viewmodel.RecipeUiState
 
 @Composable
 fun HomeScreen(
-    uiState: RecipeUiState
+    uiState: RecipeUiState,
+    onRecipeClick: (Int) -> Unit
 ) {
 
     when {
@@ -81,7 +82,12 @@ fun HomeScreen(
                     }
                 ) { recipe ->
 
-                    RecipeCard(recipe)
+                    RecipeCard(
+                        recipe = recipe,
+                        onClick = {
+                            onRecipeClick(recipe.idRecept)
+                        }
+                    )
                 }
             }
         }
@@ -90,37 +96,35 @@ fun HomeScreen(
 
 @Composable
 private fun RecipeCard(
-    recipe: Recipe
+    recipe: Recipe,
+    onClick: () -> Unit
 ) {
 
     Card(
+        onClick = onClick,
         modifier = Modifier.fillMaxWidth()
     ) {
 
         Column(
             modifier = Modifier.padding(20.dp),
-            verticalArrangement =
-                Arrangement.spacedBy(8.dp)
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
 
             Text(
                 text = recipe.naziv,
-                style =
-                    MaterialTheme.typography.titleLarge
+                style = MaterialTheme.typography.titleLarge
             )
 
             Text(
                 text = recipe.opis,
-                style =
-                    MaterialTheme.typography.bodyMedium
+                style = MaterialTheme.typography.bodyMedium
             )
 
             recipe.napomena?.let { napomena ->
 
                 Text(
                     text = napomena,
-                    style =
-                        MaterialTheme.typography.bodySmall
+                    style = MaterialTheme.typography.bodySmall
                 )
             }
         }
